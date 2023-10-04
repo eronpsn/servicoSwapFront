@@ -34,9 +34,10 @@ const Login = () => {
     })
     sessionStorage.setItem('token', '')
     sessionStorage.setItem('user', '')
+    sessionStorage.setItem('iduser', '')
     sessionStorage.setItem('role', '')
     if (username !== '' && password !== '') {
-      const body = { email: username, senha: password, perfil: 'A' }
+      const body = { email: username, senha: password }
       const result = await apiRequest('login', 'POST', body)
       //console.log(result)
       if (result.code === 'ERR_BAD_REQUEST' || result.ok === false) {
@@ -47,13 +48,11 @@ const Login = () => {
         setLoading(false)
       } else {
         sessionStorage.setItem('token', result.token)
-        sessionStorage.setItem('user', result.user[0].nome)
+        sessionStorage.setItem('user', result.user.nome)
+        sessionStorage.setItem('iduser', result.user.id)
         setLoading(false)
         window.location.assign('/#/home')
       }
-      //console.log(result.code) //ERR_BAD_REQUEST
-      //   console.log(result.status)
-      //   console.log(result)
     } else {
       setErrorState({
         error: true,

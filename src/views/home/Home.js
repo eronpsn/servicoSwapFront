@@ -10,7 +10,7 @@ import {
   CCardText,
   CButton,
 } from '@coreui/react'
-import srcAvatares from 'src/assets/images/avatars/1.jpg'
+import srcAvatares from 'src/assets/images/avatars/perfil.jpg'
 const Home = () => {
   const tarefasPendentes = [
     {

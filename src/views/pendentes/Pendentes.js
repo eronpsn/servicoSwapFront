@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
-import {React,useEffect,useState} from 'react'
+import { React, useEffect, useState, useRef } from 'react'
 import { apiRequest } from "../../api/config";
+import { Newtoast } from "../../components/Toasts"
 import {
   CCard,
   CCardBody,
@@ -10,103 +11,134 @@ import {
   CCardTitle,
   CCardText,
   CButton,
+  CToaster,
+  CModal,
+  CModalHeader,
+  CModalTitle,
+  CModalBody,
+  CModalFooter,
+  CContainer,
+  CForm,
+  CInputGroup,
+  CFormTextarea
 } from '@coreui/react'
-import srcAvatares from 'src/assets/images/avatars/1.jpg'
+import moment from "moment";
+import srcAvatar from 'src/assets/images/avatars/perfil.jpg'
 const Pendentes = () => {
-const [tarefasPendentes, setTarefasPendentes] = useState([])
-const token = sessionStorage.getItem("token");
+  const [toast, addToast] = useState(0)
+  const toaster = useRef()
+  const [visibleModal, setVisibleModal] = useState(false)
+  const [tarefasPendentes, setTarefasPendentes] = useState([])
+  const token = sessionStorage.getItem("token");
+  const iduser = sessionStorage.getItem("iduser");
 
-  const getAllAtividades = async()=>{
+  const getAllAtividades = async () => {
     const headers = {
       'x-token': token
-  };
-
-    const result = await apiRequest('tarefas', 'GET','', headers)
-    setTarefasPendentes(result.data)
+    };
+    const result = await apiRequest('tarefas', 'GET', '', headers)
+    setTarefasPendentes(result.dados)
 
   }
 
+  const pegaTarefa = async (id) => {
+    const headers = {
+      'x-token': token
+    };
+    const body = { id_tarefa: id }
+    const result = await apiRequest('tarefas/pegar-tarefa', 'POST', body, headers)
+    addToast(Newtoast('Teste de msg'))
+  }
 
   useEffect(() => {
     getAllAtividades();
-    // POST request using axios inside useEffect React hook
-   // const article = { name: 'cerulean' };
-   /*axios.get('https://api-servico-swap.onrender.com/api/v1/tarefas', {headers})
-        .then((response) => {
-          console.log(response);
-        setTarefasPendentes(response.data);
-          return response.data
-        }).catch(error => {
-         // setState({ errorMessage: error.message });
-          console.error('There was an error!', error);
-      });*/
+  },);
 
-// empty dependency array means this effect will only run once (like componentDidMount in classes)
-},);
 
-/*if (!post) return null;
-console.log(post)*/
- /* const tarefasPendentes = [
-    {
-      usuario: {
-        nome: 'Pedro Nou',
-        avatar: srcAvatares+'1.jpg' ,
-      },
-      projeto:{
-        descricao:'projeto de arquitetura',
-        data:'10/07/2023 10:54'
-      }
-    },
-    {
-      usuario: {
-        nome: 'Paulo',
-        avatar: srcAvatares+'1.jpg' ,
-      },
-      projeto:{
-        descricao:'Redes',
-        data:'04/07/2023 10:54'
-      }
-    }
-  ]*/
+
   return (
     <CRow className='mt-12'>
-   { tarefasPendentes.map((item, index) => (
-    <CRow key={index} className='mt-4'>
-      <CCard >
-  <CCardBody>
-  <CRow>
-    <CCol sm={5}>
-      <CCard  style={{ minHeight: '10rem' }}>
-        <CCardBody>
-         <CCardTitle> <CAvatar size="md" src={srcAvatares} /></CCardTitle><CCardText>
-            <strong>Postado em:</strong> {item.data_criacao}
-          </CCardText>
 
-        </CCardBody>
-      </CCard>
-    </CCol>
+      <CCol xs="auto" >
+        <CButton onClick={() => setVisibleModal(!visibleModal)}>Nova tarefa </CButton>
+      </CCol>
 
-    <CCol sm={{span:5, offset:2}} >
-      <CCard  style={{ minHeight: '10rem' }}>
-        <CCardBody>
-          <CCardTitle>Solicitou:</CCardTitle>
-          <CCardText>
-          {item.descricao}
-          </CCardText>
-        </CCardBody>
-      </CCard>
-    </CCol>
-  </CRow>
-  <div className=" mt-2" >
-  <CButton color="danger" type='button' >EXCLUIR</CButton>
-  <CButton color="primary" type='button'className='mx-2'>EDITAR</CButton>
-  <CButton color="primary" type='button'>PEGAR TAREFA</CButton>
-  </div>
-  </CCardBody>
-</CCard>
-     </CRow>
- ))
-   }
+      <CModal
+        backdrop="static"
+        alignment="center"
+        visible={visibleModal}
+        onClose={() => setVisibleModal(false)}
+        aria-labelledby="StaticBackdropExampleLabel"
+      >
+        <CModalHeader>
+          <CModalTitle id="StaticBackdropExampleLabel">Nova tarefa</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          <div className="">
+            <CContainer>
+              <CForm>
+                <CInputGroup className="mb-3">
+                  <CFormTextarea
+                    id="exampleFormControlTextarea1"
+                    label="Descrição: "
+                    rows={3}
+                  ></CFormTextarea>
+                </CInputGroup>
+              </CForm>
+            </CContainer>
+          </div>
+
+        </CModalBody>
+        <CModalFooter>
+          <CButton color="secondary" onClick={() => setVisibleModal(false)}>
+            Fechar
+          </CButton>
+          <CButton color="primary">Salvar</CButton>
+        </CModalFooter>
+      </CModal>
+      {tarefasPendentes.map((item, index) => (
+
+        <CRow key={index} className='mt-4'>
+          <CCard >
+            <CCardBody>
+              <CRow>
+                <CCol sm={5}>
+                  <CCard style={{ minHeight: '10rem' }}>
+                    <CCardBody>
+                      <CCardTitle> <CAvatar size="md" src={srcAvatar} /></CCardTitle><CCardText>
+                        <strong>Postado em:</strong> {moment(new Date(item.data_criacao)).format("DD/MM/YYYY hh:mm")}
+                      </CCardText>
+
+                    </CCardBody>
+                  </CCard>
+                </CCol>
+
+                <CCol sm={{ span: 5, offset: 2 }} >
+                  <CCard style={{ minHeight: '10rem' }}>
+                    <CCardBody>
+                      <CCardTitle>Solicitou:</CCardTitle>
+                      <CCardText>
+                        {item.descricao}
+                      </CCardText>
+                    </CCardBody>
+                  </CCard>
+                </CCol>
+              </CRow>
+              <div className=" mt-2" >
+                {iduser === item.solicitante_id && (
+                  <div>
+                    <CButton color="danger" type='button' >EXCLUIR</CButton>
+                    <CButton color="primary" type='button' className='mx-2'>EDITAR</CButton>
+                  </div>
+                )}
+                {iduser !== item.solicitante_id && <CButton color="primary" type='button' onClick={() => pegaTarefa(item.id)}>PEGAR TAREFA</CButton>}
+              </div>
+              <CToaster ref={toaster} push={toast} placement="top-end" />
+            </CCardBody>
+          </CCard>
+        </CRow>
+      ))
+      }
     </CRow>
   )
 

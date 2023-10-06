@@ -2,6 +2,8 @@
 import { React, useEffect, useState, useRef } from 'react'
 import { apiRequest } from "../../api/config";
 import { Newtoast } from "../../components/Toasts"
+import { NewModalTarefa } from "../../components/Modal"
+import { NewModalConfirm } from "../../components/ModalConfirm"
 import {
   CCard,
   CCardBody,
@@ -11,23 +13,16 @@ import {
   CCardTitle,
   CCardText,
   CButton,
-  CToaster,
-  CModal,
-  CModalHeader,
-  CModalTitle,
-  CModalBody,
-  CModalFooter,
-  CContainer,
-  CForm,
-  CInputGroup,
-  CFormTextarea
-} from '@coreui/react'
+  CToaster} from '@coreui/react'
 import moment from "moment";
 import srcAvatar from 'src/assets/images/avatars/perfil.jpg'
 const Pendentes = () => {
   const [toast, addToast] = useState(0)
   const toaster = useRef()
   const [visibleModal, setVisibleModal] = useState(false)
+  const [visibleModalConfirm, setVisibleModalConfirm] = useState(false)
+  const [idTarefa, setIdTarefa] = useState('')
+  const [dscTarefa, setDscTarefa] = useState('')
   const [tarefasPendentes, setTarefasPendentes] = useState([])
   const token = sessionStorage.getItem("token");
   const iduser = sessionStorage.getItem("iduser");
@@ -47,9 +42,32 @@ const Pendentes = () => {
     };
     const body = { id_tarefa: id }
     const result = await apiRequest('tarefas/pegar-tarefa', 'POST', body, headers)
-    addToast(Newtoast('Teste de msg'))
+
   }
 
+  const handleNovaTarefa = async (descricao) => {
+    const headers = {
+      'x-token': token
+    };
+    const body = { descricao: descricao }
+    const result = await apiRequest('tarefas/nova-tarefa', 'POST', body, headers)
+    addToast(Newtoast('Tarefa cadastrada com sucesso.'))
+  };
+
+  const handleExcluirTarefa = async (idtarefa) => {
+    const headers = {
+      'x-token': token
+    };
+    const body = { id_tarefa: idtarefa }
+    const result = await apiRequest('tarefas/excluir-tarefa', 'POST', body, headers)
+    addToast(Newtoast('Tarefa excluida com sucesso.'))
+  };
+
+  const showConfirmExcluir=(idtarefa, dscTarefa)=>{
+    setVisibleModalConfirm(!visibleModalConfirm)
+    setIdTarefa(idtarefa)
+    setDscTarefa(dscTarefa)
+  }
   useEffect(() => {
     getAllAtividades();
   },);
@@ -63,39 +81,18 @@ const Pendentes = () => {
         <CButton onClick={() => setVisibleModal(!visibleModal)}>Nova tarefa </CButton>
       </CCol>
 
-      <CModal
-        backdrop="static"
-        alignment="center"
+      <NewModalTarefa
         visible={visibleModal}
         onClose={() => setVisibleModal(false)}
-        aria-labelledby="StaticBackdropExampleLabel"
-      >
-        <CModalHeader>
-          <CModalTitle id="StaticBackdropExampleLabel">Nova tarefa</CModalTitle>
-        </CModalHeader>
-        <CModalBody>
-          <div className="">
-            <CContainer>
-              <CForm>
-                <CInputGroup className="mb-3">
-                  <CFormTextarea
-                    id="exampleFormControlTextarea1"
-                    label="Descrição: "
-                    rows={3}
-                  ></CFormTextarea>
-                </CInputGroup>
-              </CForm>
-            </CContainer>
-          </div>
-
-        </CModalBody>
-        <CModalFooter>
-          <CButton color="secondary" onClick={() => setVisibleModal(false)}>
-            Fechar
-          </CButton>
-          <CButton color="primary">Salvar</CButton>
-        </CModalFooter>
-      </CModal>
+        onSave={handleNovaTarefa}
+      />
+        <NewModalConfirm
+        visible={visibleModalConfirm}
+        onClose={() => setVisibleModalConfirm(false)}
+        onSave={handleExcluirTarefa}
+        idTarefa={idTarefa}
+        dscTarefa={dscTarefa}
+      />
       {tarefasPendentes.map((item, index) => (
 
         <CRow key={index} className='mt-4'>
@@ -127,7 +124,7 @@ const Pendentes = () => {
               <div className=" mt-2" >
                 {iduser === item.solicitante_id && (
                   <div>
-                    <CButton color="danger" type='button' >EXCLUIR</CButton>
+                    <CButton color="danger" type='button' onClick={() => showConfirmExcluir(item.id, item.descricao)} >EXCLUIR</CButton>
                     <CButton color="primary" type='button' className='mx-2'>EDITAR</CButton>
                   </div>
                 )}

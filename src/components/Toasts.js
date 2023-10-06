@@ -16,8 +16,7 @@ export const Newtoast = (message) => {
         >
           <rect width="100%" height="100%" fill="#007aff"></rect>
         </svg>
-        <div className="fw-bold me-auto">CoreUI for React.js</div>
-        <small>7 min ago</small>
+        <div className="fw-bold me-auto">Atenção</div>
       </CToastHeader>
       <CToastBody>{message}</CToastBody>
     </CToast>

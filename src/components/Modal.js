@@ -13,7 +13,7 @@ import {
   CFormTextarea,
 } from '@coreui/react';
 
-export const NewModalTarefa = ({ visible, onClose, onSave }) => {
+export const NewModalTarefa = ({ visible, onClose, onSave, descricaoTarefa }) => {
   const [dscTarefa, setDscTarefa] = useState('');
   const [errorState, setErrorState] = useState({
     error: false,
@@ -38,14 +38,14 @@ export const NewModalTarefa = ({ visible, onClose, onSave }) => {
       aria-labelledby="StaticBackdropExampleLabel"
     >
       <CModalHeader>
-        <CModalTitle id="StaticBackdropExampleLabel">Nova tarefa</CModalTitle>
+        <CModalTitle id="StaticBackdropExampleLabel">Tarefa</CModalTitle>
       </CModalHeader>
       <CModalBody>
         <div className="">
           <CForm>
             <CInputGroup className="mb-3">
               <CFormTextarea
-                text=""
+                text={descricaoTarefa}
                 id="exampleFormControlTextarea1"
                 label="Descrição: "
                 rows={3}
@@ -73,5 +73,6 @@ export const NewModalTarefa = ({ visible, onClose, onSave }) => {
 NewModalTarefa.propTypes = {
   onClose: PropTypes.func.isRequired,
   onSave: PropTypes.func.isRequired,
-  visible: PropTypes.func.isRequired
+  visible: PropTypes.func.isRequired,
+  descricaoTarefa: PropTypes.func.isRequired
 };

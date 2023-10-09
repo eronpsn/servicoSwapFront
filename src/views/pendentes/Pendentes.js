@@ -13,7 +13,8 @@ import {
   CCardTitle,
   CCardText,
   CButton,
-  CToaster} from '@coreui/react'
+  CToaster
+} from '@coreui/react'
 import moment from "moment";
 import srcAvatar from 'src/assets/images/avatars/perfil.jpg'
 const Pendentes = () => {
@@ -45,10 +46,11 @@ const Pendentes = () => {
 
   }
 
-  const handleNovaTarefa = async (descricao) => {
+  const handleTarefa = async (descricao) => {
     const headers = {
       'x-token': token
     };
+
     const body = { descricao: descricao }
     const result = await apiRequest('tarefas/nova-tarefa', 'POST', body, headers)
     addToast(Newtoast('Tarefa cadastrada com sucesso.'))
@@ -63,8 +65,13 @@ const Pendentes = () => {
     addToast(Newtoast('Tarefa excluida com sucesso.'))
   };
 
-  const showConfirmExcluir=(idtarefa, dscTarefa)=>{
+  const showConfirmExcluir = (idtarefa, dscTarefa) => {
     setVisibleModalConfirm(!visibleModalConfirm)
+    setIdTarefa(idtarefa)
+    setDscTarefa(dscTarefa)
+  }
+  const showModalTarefa = (idtarefa, dscTarefa) => {
+    setVisibleModal(!visibleModal)
     setIdTarefa(idtarefa)
     setDscTarefa(dscTarefa)
   }
@@ -78,15 +85,16 @@ const Pendentes = () => {
     <CRow className='mt-12'>
 
       <CCol xs="auto" >
-        <CButton onClick={() => setVisibleModal(!visibleModal)}>Nova tarefa </CButton>
+        <CButton onClick={() => showModalTarefa('', '')}>Nova tarefa </CButton>
       </CCol>
 
       <NewModalTarefa
         visible={visibleModal}
         onClose={() => setVisibleModal(false)}
-        onSave={handleNovaTarefa}
+        onSave={handleTarefa}
+        descricaoTarefa={dscTarefa}
       />
-        <NewModalConfirm
+      <NewModalConfirm
         visible={visibleModalConfirm}
         onClose={() => setVisibleModalConfirm(false)}
         onSave={handleExcluirTarefa}
@@ -125,7 +133,7 @@ const Pendentes = () => {
                 {iduser === item.solicitante_id && (
                   <div>
                     <CButton color="danger" type='button' onClick={() => showConfirmExcluir(item.id, item.descricao)} >EXCLUIR</CButton>
-                    <CButton color="primary" type='button' className='mx-2'>EDITAR</CButton>
+                    <CButton color="primary" type='button' className='mx-2' onClick={() => showModalTarefa(item.id, item.descricao)}>EDITAR</CButton>
                   </div>
                 )}
                 {iduser !== item.solicitante_id && <CButton color="primary" type='button' onClick={() => pegaTarefa(item.id)}>PEGAR TAREFA</CButton>}

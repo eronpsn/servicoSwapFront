@@ -50,10 +50,15 @@ const Pendentes = () => {
     const headers = {
       'x-token': token
     };
-
-    const body = { descricao: descricao }
-    const result = await apiRequest('tarefas/nova-tarefa', 'POST', body, headers)
-    addToast(Newtoast('Tarefa cadastrada com sucesso.'))
+    if (idTarefa === '') {
+      const body = { descricao: descricao }
+      const result = await apiRequest('tarefas/nova-tarefa', 'POST', body, headers)
+      addToast(Newtoast('Tarefa cadastrada com sucesso.'))
+    } else {
+      const body = { descricao: descricao, id_tarefa: idTarefa }
+      const result = await apiRequest('tarefas/editar-tarefa', 'PUT', body, headers)
+      addToast(Newtoast('Tarefa cadastrada com sucesso.'))
+    }
   };
 
   const handleExcluirTarefa = async (idtarefa) => {

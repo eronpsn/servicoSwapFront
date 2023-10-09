@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { React, useState } from 'react'
+import { React, useEffect, useState } from 'react'
 import PropTypes from 'prop-types';
 import {
   CModal,
@@ -14,20 +14,39 @@ import {
 } from '@coreui/react';
 
 export const NewModalTarefa = ({ visible, onClose, onSave, descricaoTarefa }) => {
+  //console.log(descricaoTarefa)
   const [dscTarefa, setDscTarefa] = useState('');
   const [errorState, setErrorState] = useState({
     error: false,
     message: '',
   });
+  //
+  const handleTextareaChange = (e) => {
+    setDscTarefa(e.target.value);
+  };
 
   const handleSave = () => {
-    if (dscTarefa === '') {
+    if (dscTarefa === '' && descricaoTarefa === '') {
       setErrorState({ error: true, message: 'Preencha a descrição da tarefa' });
     } else {
-      onSave(dscTarefa);
+      const t = (dscTarefa === '') ? descricaoTarefa : dscTarefa;
+      onSave(t);
+      setDscTarefa('');
       onClose();
     }
   };
+
+  const handleOnClose=()=>{
+    setDscTarefa('');
+    onClose();
+  }
+  useEffect(() => {
+    console.log('descricaoTarefa: '+descricaoTarefa)
+    console.log('dscTarefa'+ dscTarefa)
+    if (descricaoTarefa !== dscTarefa) {
+      setDscTarefa(descricaoTarefa);
+    }
+  }, [descricaoTarefa]);
 
   return (
     <CModal
@@ -45,21 +64,21 @@ export const NewModalTarefa = ({ visible, onClose, onSave, descricaoTarefa }) =>
           <CForm>
             <CInputGroup className="mb-3">
               <CFormTextarea
-                text={descricaoTarefa}
+                value={dscTarefa}
                 id="exampleFormControlTextarea1"
                 label="Descrição: "
                 rows={3}
-                onChange={(e) => setDscTarefa(e.target.value)}
+                onChange={handleTextareaChange}
               ></CFormTextarea>
             </CInputGroup>
-            {errorState.error && dscTarefa === '' && (
+            {errorState.error && dscTarefa === '' && descricaoTarefa === '' && (
               <span style={{ color: 'red' }}>{errorState.message}</span>
             )}
           </CForm>
         </div>
       </CModalBody>
       <CModalFooter>
-        <CButton color="secondary" onClick={onClose}>
+        <CButton color="secondary" onClick={handleOnClose}>
           Fechar
         </CButton>
         <CButton color="primary" onClick={handleSave}>

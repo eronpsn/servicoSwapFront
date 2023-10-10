@@ -11,7 +11,7 @@ import {
   CFormInput
 } from '@coreui/react';
 
-export const NewModalConfirm = ({ visible, onClose, onSave, idTarefa, dscTarefa }) => {
+export const NewModalConfirm = ({ visible, onClose, onSave, idTarefa, dscTarefa, acao }) => {
 
   const handleConfirm = () => {
       onSave(idTarefa);
@@ -31,7 +31,13 @@ export const NewModalConfirm = ({ visible, onClose, onSave, idTarefa, dscTarefa 
       </CModalHeader>
       <CModalBody>
         <CFormInput hidden value={idTarefa}/>
-      <p>Deseja realmente excluir a tarefa: <strong> {dscTarefa}</strong>?</p>
+        <CFormInput hidden value={acao}/>
+       { {
+        'E':<p>Deseja realmente <strong>excluir</strong> a tarefa: <strong> {dscTarefa}</strong>?</p>,
+        'P':<p>Deseja realmente <strong>pegar</strong> pegar a tarefa: <strong> {dscTarefa}</strong>?</p>
+       }[acao]
+      
+       }
       </CModalBody>
       <CModalFooter>
         <CButton color="secondary" onClick={onClose}>
@@ -51,5 +57,6 @@ NewModalConfirm.propTypes = {
   onSave: PropTypes.func.isRequired,
   visible: PropTypes.func.isRequired,
   idTarefa: PropTypes.func.isRequired,
-  dscTarefa: PropTypes.func.isRequired
+  dscTarefa: PropTypes.func.isRequired,
+  acao: PropTypes.func.isRequired
 };

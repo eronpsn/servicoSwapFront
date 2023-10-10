@@ -24,6 +24,7 @@ const Pendentes = () => {
   const [visibleModalConfirm, setVisibleModalConfirm] = useState(false)
   const [idTarefa, setIdTarefa] = useState('')
   const [dscTarefa, setDscTarefa] = useState('')
+  const [acao, setAcao] = useState('')
   const [tarefasPendentes, setTarefasPendentes] = useState([])
   const token = sessionStorage.getItem("token");
   const iduser = sessionStorage.getItem("iduser");
@@ -34,15 +35,6 @@ const Pendentes = () => {
     };
     const result = await apiRequest('tarefas', 'GET', '', headers)
     setTarefasPendentes(result.dados)
-
-  }
-
-  const pegaTarefa = async (id) => {
-    const headers = {
-      'x-token': token
-    };
-    const body = { id_tarefa: id }
-    const result = await apiRequest('tarefas/pegar-tarefa', 'POST', body, headers)
 
   }
 
@@ -61,19 +53,27 @@ const Pendentes = () => {
     }
   };
 
-  const handleExcluirTarefa = async (idtarefa) => {
+  const handleConfirmTarefa = async (idtarefa) => {
     const headers = {
       'x-token': token
     };
     const body = { id_tarefa: idtarefa }
-    const result = await apiRequest('tarefas/excluir-tarefa', 'POST', body, headers)
-    addToast(Newtoast('Tarefa excluida com sucesso.'))
+    switch(acao){
+      case 'E': const result = await apiRequest('tarefas/excluir-tarefa', 'POST', body, headers)
+      addToast(Newtoast('Tarefa excluida com sucesso.'))
+      break;
+      case 'P': const r = await apiRequest('tarefas/pegar-tarefa', 'PUT', body, headers)
+      addToast(Newtoast('Tarefa pega com sucesso.'))
+      break;
+    }
+    
   };
 
-  const showConfirmExcluir = (idtarefa, dscTarefa) => {
+  const showConfirm = (idtarefa, dscTarefa, acao) => {
     setVisibleModalConfirm(!visibleModalConfirm)
     setIdTarefa(idtarefa)
     setDscTarefa(dscTarefa)
+    setAcao(acao)
   }
   const showModalTarefa = (idtarefa, dscTarefa) => {
     setVisibleModal(!visibleModal)
@@ -102,9 +102,10 @@ const Pendentes = () => {
       <NewModalConfirm
         visible={visibleModalConfirm}
         onClose={() => setVisibleModalConfirm(false)}
-        onSave={handleExcluirTarefa}
+        onSave={handleConfirmTarefa}
         idTarefa={idTarefa}
         dscTarefa={dscTarefa}
+        acao={acao}
       />
       {tarefasPendentes.map((item, index) => (
 
@@ -137,11 +138,11 @@ const Pendentes = () => {
               <div className=" mt-2" >
                 {iduser === item.solicitante_id && (
                   <div>
-                    <CButton color="danger" type='button' onClick={() => showConfirmExcluir(item.id, item.descricao)} >EXCLUIR</CButton>
+                    <CButton color="danger" type='button' onClick={() => showConfirm(item.id, item.descricao, 'E')} >EXCLUIR</CButton>
                     <CButton color="primary" type='button' className='mx-2' onClick={() => showModalTarefa(item.id, item.descricao)}>EDITAR</CButton>
                   </div>
                 )}
-                {iduser !== item.solicitante_id && <CButton color="primary" type='button' onClick={() => pegaTarefa(item.id)}>PEGAR TAREFA</CButton>}
+                {iduser !== item.solicitante_id && <CButton color="primary" type='button' onClick={() => showConfirm(item.id, item.descricao, 'P')}>PEGAR TAREFA</CButton>}
               </div>
               <CToaster ref={toaster} push={toast} placement="top-end" />
             </CCardBody>

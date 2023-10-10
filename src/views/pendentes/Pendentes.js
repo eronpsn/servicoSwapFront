@@ -25,10 +25,14 @@ const Pendentes = () => {
   const [idTarefa, setIdTarefa] = useState('')
   const [dscTarefa, setDscTarefa] = useState('')
   const [acao, setAcao] = useState('')
+  const [marthAtualizar, setMarthAtualizar] = useState(15)
   const [tarefasPendentes, setTarefasPendentes] = useState([])
   const token = sessionStorage.getItem("token");
   const iduser = sessionStorage.getItem("iduser");
 
+  const gerarNumeroAleatorio = () => {
+    return Math.floor(Math.random() * (1 - 101)) + 45;
+  }
   const getAllAtividades = async () => {
     const headers = {
       'x-token': token
@@ -45,11 +49,21 @@ const Pendentes = () => {
     if (idTarefa === '') {
       const body = { descricao: descricao }
       const result = await apiRequest('tarefas/nova-tarefa', 'POST', body, headers)
-      addToast(Newtoast('Tarefa cadastrada com sucesso.'))
+      if (result.success === true) {
+        setMarthAtualizar(gerarNumeroAleatorio)
+        addToast(Newtoast(result.message))  // adicionar na API a message de retorno
+      } else {
+        addToast(Newtoast(result.message))
+      }
     } else {
       const body = { descricao: descricao, id_tarefa: idTarefa }
       const result = await apiRequest('tarefas/editar-tarefa', 'PUT', body, headers)
-      addToast(Newtoast('Tarefa cadastrada com sucesso.'))
+      if (result.success === true) {
+        setMarthAtualizar(gerarNumeroAleatorio)
+        addToast(Newtoast(result.message))
+      } else {
+        addToast(Newtoast(result.message))
+      }
     }
   };
 
@@ -58,15 +72,27 @@ const Pendentes = () => {
       'x-token': token
     };
     const body = { id_tarefa: idtarefa }
-    switch(acao){
-      case 'E': const result = await apiRequest('tarefas/excluir-tarefa', 'POST', body, headers)
-      addToast(Newtoast('Tarefa excluida com sucesso.'))
-      break;
+    switch (acao) {
+      case 'E': const result = await apiRequest('tarefas/excluir-tarefa', 'DELETE', body, headers)
+      if (result.success === true) {
+        setMarthAtualizar(gerarNumeroAleatorio)
+        addToast(Newtoast(result.message))
+      } else {
+        addToast(Newtoast(result.message))
+      }
+        break;
       case 'P': const r = await apiRequest('tarefas/pegar-tarefa', 'PUT', body, headers)
-      addToast(Newtoast('Tarefa pega com sucesso.'))
-      break;
+      if (r.success === true) {
+        setMarthAtualizar(gerarNumeroAleatorio)
+        addToast(Newtoast(r.message))
+      } else {
+        addToast(Newtoast(r.message))
+      }
+        break;
+      default:
+        break;
     }
-    
+
   };
 
   const showConfirm = (idtarefa, dscTarefa, acao) => {
@@ -82,7 +108,7 @@ const Pendentes = () => {
   }
   useEffect(() => {
     getAllAtividades();
-  },);
+  }, [marthAtualizar]);
 
 
 

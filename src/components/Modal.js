@@ -41,8 +41,6 @@ export const NewModalTarefa = ({ visible, onClose, onSave, descricaoTarefa }) =>
     onClose();
   }
   useEffect(() => {
-    console.log('descricaoTarefa: '+descricaoTarefa)
-    console.log('dscTarefa'+ dscTarefa)
     if (descricaoTarefa !== dscTarefa) {
       setDscTarefa(descricaoTarefa);
     }

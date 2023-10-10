@@ -16,6 +16,7 @@ const AppHeaderDropdown = () => {
   const logoff = async () => {
     sessionStorage.setItem('token', '')
     sessionStorage.setItem('user', '')
+    sessionStorage.setItem('iduser', '')
     sessionStorage.setItem('role', '')
   }
   return (

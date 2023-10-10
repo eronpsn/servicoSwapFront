@@ -39,8 +39,7 @@ const Login = () => {
     if (username !== '' && password !== '') {
       const body = { email: username, senha: password }
       const result = await apiRequest('login', 'POST', body)
-      //console.log(result)
-      if (result.code === 'ERR_BAD_REQUEST' || result.ok === false) {
+      if (result.code === 'ERR_BAD_REQUEST' || result.success === false) {
         setErrorState({
           error: true,
           message: 'Email e/ou senha inválidos.',
@@ -50,6 +49,7 @@ const Login = () => {
         sessionStorage.setItem('token', result.token)
         sessionStorage.setItem('user', result.user.nome)
         sessionStorage.setItem('iduser', result.user.id)
+        sessionStorage.setItem('role', result.user.perfil)
         setLoading(false)
         window.location.assign('/#/home')
       }
@@ -79,7 +79,7 @@ const Login = () => {
                       <CFormInput
                         placeholder="Email"
                         autoComplete="username"
-                        className={username === '' ? 'is-invalid' : 'is-valid'}
+                        //className={username === '' ? 'is-invalid' : 'is-valid'}
                         onChange={(e) => setUserName(e.target.value)}
                       />
                     </CInputGroup>
@@ -91,7 +91,7 @@ const Login = () => {
                         type="password"
                         placeholder="Senha"
                         autoComplete="current-password"
-                        className={password === '' ? 'is-invalid' : 'is-valid'}
+                        //className={password === '' ? 'is-invalid' : 'is-valid'}
                         onChange={(e) => setPassword(e.target.value)}
                       />
                     </CInputGroup>
@@ -122,7 +122,7 @@ const Login = () => {
                     </p>
                     <Link to="/register">
                       <CButton color="primary" className="mt-3" active tabIndex={-1}>
-                        Register Now!
+                        Novo Registro
                       </CButton>
                     </Link>
                   </div>

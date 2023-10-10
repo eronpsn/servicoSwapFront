@@ -31,4 +31,14 @@ export const apiRequest = async (rota, method, body, headers) => {
         return err
       })
   }
+  else if (method === 'DELETE') {
+    return await axios
+      .delete(`https://api-servico-swap.onrender.com/api/v1/${rota}`,{data:body, headers:headers} )
+      .then((result) => {
+        return result.data
+      })
+      .catch((err) => {
+        return err
+      })
+  }
 }
